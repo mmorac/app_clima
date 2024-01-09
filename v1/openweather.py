@@ -12,18 +12,23 @@ baseURL = '/v1/weather/'
 def weather_test():
     return jsonify({'result': 'True', 'response': 'Primer endpoint con flask y todo salió tuanis.'})
 
-@open_weather.route(baseURL + '7dias/<ciudad>', methods = ['GET'])
+#Solicitar dinámicamente el clima de una ciudad para los próximos 5 días
+#con base en el nombre de la ciudad, aportado en la URL
+@open_weather.route(baseURL + '5dias/<ciudad>', methods = ['GET'])
 def weather_in(ciudad):
     try:
+        #Obtengo a través de la API el ID de la ciudad en el servicio de AccuWeather
         info = rq.get(f'http://dataservice.accuweather.com/locations/v1/cities/search?apikey=ierqQnKPN6Q1O0vK9dnENMuAIaf6lkA5&q={ciudad}').json()
         ciudad_id = info[0]["Key"]
+        #Hago la solicitud del pronóstico para los próximos 5 días en la ciudad por key
         clima = rq.get(f'http://dataservice.accuweather.com/forecasts/v1/daily/5day/{ciudad_id}?apikey=ierqQnKPN6Q1O0vK9dnENMuAIaf6lkA5')
         fechas = clima.json()['DailyForecasts']
+        #Creo una lista de listas conteniendo la información meteorológica para cada uno de los días solicitados
         pronostico = []
         for f in fechas:
             lista = [f["Date"], f_to_c(f["Temperature"]["Maximum"]["Value"]), f_to_c(f["Temperature"]["Maximum"]["Value"]), f["Day"]["IconPhrase"]]
             pronostico.append(lista)
-        return jsonify({'result': 'True', 'response': f'La información para {ciudad} es: {pronostico}'}), 200
+        return jsonify({'result': 'True', 'response': pronostico}), 200
     except Exception as e:
         print(e)
         return jsonify({'result': 'False', 'response': 'Ha ocurrido un error en tu solicitud.'}), 500
