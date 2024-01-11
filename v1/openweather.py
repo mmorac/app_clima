@@ -21,7 +21,8 @@ def weather(ciudad):
         ciudad_id = info[0]["Key"]
         #Hago la solicitud del pronóstico para los próximos 5 días en la ciudad por key
         clima = rq.get(f'http://dataservice.accuweather.com/currentconditions/v1/{ciudad_id}?apikey=ierqQnKPN6Q1O0vK9dnENMuAIaf6lkA5').json()[0]
-        #Creo una lista de listas conteniendo la información meteorológica para cada uno de los días solicitados
+        #Creo una lista de listas conteniendo la información meteorológica para la ciudad
+        #Teniendo en consideración la estructura de la respuesta que obtengo de la API
         pronostico = {"fecha": str(datetime.fromtimestamp(clima["EpochTime"])), "temperatura": clima["Temperature"]["Metric"]["Value"], "tiempo": clima["WeatherText"]}
         return jsonify({'result': 'True', 'response': pronostico}), 200
     except Exception as e:
@@ -71,9 +72,11 @@ def mph_to_kph(velocidad):
 @functions.fence
 def miciudad():
     try:
-        inData = request.get_json()
+        #Obtengo la información de los headers, y capturo específicamente el de Authorization, que contendrá la JWT
         headerAuth = request.headers['Authorization']
+        #Separo la JWT de la palabra 'Bearer' para dejármela como llave de autenticación, y la verifico con la función creada para este fin
         jwtData = functions.auth.check_jwt(headerAuth.split(' ')[1])['response']
+        #Retorno el resultado de la función weather(city) definida arriba
         return weather(jwtData['city'])
     except Exception as e:
         return jsonify({'result': False, 'response': f'Peticion malformada - {str(e)}'}), 400        
