@@ -15,6 +15,6 @@ WORKDIR /app
 COPY . /app/
 
 #Instalar las librerías de Python
-RUN pip install -r requirements.txt
+RUN pip install -r --break-system-packages requirements.txt 
 #Ejecutar en consola el script principal de Python
 CMD ["python3", "app.py"]
