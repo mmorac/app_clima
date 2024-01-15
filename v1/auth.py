@@ -22,10 +22,7 @@ def auth_test():
 @auth.route(baseURL + 'issuetoken', methods = ['POST'])
 def issuetoken():
     try:
-        try:
-            inData = request.get_json()
-        except Exception as e:
-            print("Error:", e)
+        inData = request.get_json()
         token = functions.auth.issue_jwt(inData)
         return jsonify({'result': True, 'response': token}), 200
     except:

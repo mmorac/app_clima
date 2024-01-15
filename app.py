@@ -8,5 +8,5 @@ register_v1(app)
 if __name__ == '__main__':
     #Le indicamos a Flask qué ejecutar según el nombre de la app
     #Especificamos el host y el puerto (en este caso por ser local, se pone cualquier burrada)
-    app.run(host='0.0.0.0', port=2024, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
 
